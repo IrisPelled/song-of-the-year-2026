@@ -325,7 +325,7 @@
 
     // ולידציה: כל השירים דורגו
     if (values.some(v => v === "")) {
-      showToast("יש לדרג את כל ששת השירים לפני השליחה");
+      showToast("Please rate all six songs before sending");
       return;
     }
     // ולידציה: ערכים ייחודיים
@@ -336,7 +336,7 @@
       else seen[v] = idx;
     });
     if (dup) {
-      showToast("כל מספר 1–6 יכול לשמש פעם אחת בלבד");
+      showToast("Each number 1–6 can be used only once");
       return;
     }
 
@@ -356,7 +356,7 @@
       stopAudio();
       showToast("Your vote has been submitted! Thank you 🎉", true);
     } catch (e) {
-      showToast("שגיאה בשמירת ההצבעה. נסו שוב.");
+      showToast("Error saving your vote. Please try again.");
       console.error(e);
     } finally {
       voteBtn.disabled = false;
