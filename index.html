@@ -36,12 +36,42 @@
     top: 31%;
     left: 8%;
     right: 8%;
-    bottom: 10%;
+    bottom: 9%;
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    padding: 2px;
+  }
+
+  /* רשימת ששת המלבנים */
+  .song-list {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 2.1%;
     overflow-y: auto;
-    padding: 2px;
+  }
+
+  /* כפתור send ורוד-פוקסיה מהבהב, מתחת לששת המלבנים */
+  .send-btn {
+    flex: 0 0 auto;
+    border: none;
+    border-radius: 12px;
+    padding: 11px 0;
+    color: #fff;
+    font-size: clamp(15px, 4.8vw, 21px);
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: #ff1aa8;
+    animation: blink 1s ease-in-out infinite;
+  }
+  .send-btn:disabled { animation: none; opacity: .6; cursor: default; }
+  @keyframes blink {
+    0%, 100% { background: #ff1aa8; box-shadow: 0 0 0 0 rgba(255,26,168,.6); transform: scale(1); }
+    50%      { background: #ff5ec8; box-shadow: 0 0 20px 7px rgba(255,26,168,.9); transform: scale(1.03); }
   }
 
   /* שורה: מלבן לבן + תיבת דירוג לצדו */
@@ -167,7 +197,10 @@
 
   <div class="page">
     <div class="frame">
-      <div class="content" id="songList"></div>
+      <div class="content">
+        <div class="song-list" id="songList"></div>
+        <button class="send-btn" id="sendBtn">send</button>
+      </div>
       <button class="vote-btn" id="voteBtn" title="VOTE NOW" aria-label="VOTE NOW"></button>
     </div>
 
@@ -283,13 +316,15 @@
 
   // ---- הצבעה ----
   const voteBtn = document.getElementById("voteBtn");
-  voteBtn.addEventListener("click", async () => {
+  const sendBtn = document.getElementById("sendBtn");
+
+  async function submitVote() {
     const selects = getSelects();
     const values = selects.map(s => s.value);
 
     // ולידציה: כל השירים דורגו
     if (values.some(v => v === "")) {
-      showToast("יש לדרג את כל ששת השירים לפני הצבעה");
+      showToast("יש לדרג את כל ששת השירים לפני השליחה");
       return;
     }
     // ולידציה: ערכים ייחודיים
@@ -309,6 +344,7 @@
     COLUMNS.forEach((c, i) => { row[c] = Number(values[i]); });
 
     voteBtn.disabled = true;
+    sendBtn.disabled = true;
     try {
       const { error } = await db.from("votes").insert(row);
       if (error) throw error;
@@ -323,8 +359,12 @@
       console.error(e);
     } finally {
       voteBtn.disabled = false;
+      sendBtn.disabled = false;
     }
-  });
+  }
+
+  voteBtn.addEventListener("click", submitVote);
+  sendBtn.addEventListener("click", submitVote);
 </script>
 </body>
 </html>
